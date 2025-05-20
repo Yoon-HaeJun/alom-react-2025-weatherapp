@@ -22,11 +22,42 @@ export const getWeatherDescription = (code) => {
 export const formatHourlyData = (weatherData) => {
   if (!weatherData) return [];
   // 밑에 코드 채워주세요
-  return [];
+  const { time, temperature_2m, weather_code} = weatherData.hourly;
+
+  if (!time || !temperature_2m || !weather_code) return [];
+
+  return time.map((dateTime, idx) => ({
+    time: formatHour(dateTime),
+    temperature: temperature_2m[idx],
+    weatherCode: weather_code[idx],
+  }))
 };
 
 export const formatDailyData = (weatherData) => {
   if (!weatherData) return [];
   // 밑에 코드 채워주세요
-  return [];
+  const { time, weather_code, temperature_2m_max } = weatherData.daily;
+
+  if (!time || !weather_code || !temperature_2m_max) return [];
+
+  return time.map((date, idx) => ({
+    date: formatKoreanDate(date),
+    weatherCode: weather_code[idx],
+    temperature: temperature_2m_max ? temperature_2m_max[idx] : null,
+  }));
 };
+
+function formatHour(dateTimeString) {
+  const date = new Date(dateTimeString);
+  const hour = date.getHours();
+  return `${hour}시`;
+}
+
+function formatKoreanDate(dateString) {
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const week = ["일", "월", "화", "수", "목", "금", "토"];
+  const dayOfWeek = week[date.getDay()];
+  return `${month}월 ${day}일(${dayOfWeek})`;
+}
